@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bio | Digital Space</title>
+  <meta name="description" content="A personal bio page with a hacker aesthetic" />
+  <meta property="og:title" content="Bio | Digital Space" />
+  <meta property="og:description" content="Welcome to my digital space" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      background: #020a05;
+      color: #d0e8da;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #matrix-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      background: linear-gradient(180deg, #020a05 0%, #050f08 50%, #020a05 100%);
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 0%, rgba(2,10,5,0.4) 70%, rgba(2,10,5,0.8) 100%);
+    }
+
+    .center-wrapper {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+
+    .bio-card-wrapper {
+      opacity: 0;
+      transform: translateY(20px) scale(0.95);
+      animation: fadeIn 0.8s ease-out 0.3s forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .bio-card-outer {
+      position: relative;
+      width: 340px;
+      max-width: 90vw;
+      perspective: 1000px;
+      transition: transform 0.15s ease-out;
+    }
+
+    .bio-card-glow {
+      position: absolute;
+      inset: -1px;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    .bio-card {
+      position: relative;
+      border-radius: 6px;
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      background: rgba(5, 20, 10, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 255, 100, 0.08);
+    }
+
+    .bio-card-inner-glow {
+      position: absolute;
+      inset: 0;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+
+    .avatar-wrapper {
+      border-radius: 50%;
+      transition: box-shadow 0.5s ease;
+      box-shadow: 0 0 15px rgba(0,255,100,0.1), 0 0 30px rgba(0,255,100,0.05);
+    }
+
+    .avatar-wrapper.hovered {
+      box-shadow: 0 0 30px rgba(0,255,100,0.3), 0 0 60px rgba(0,255,100,0.1);
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 255, 100, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 255, 100, 0.1);
+      font-size: 22px;
+      font-weight: 700;
+      color: rgba(0, 255, 100, 0.9);
+      overflow: hidden;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .name {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: rgba(0, 255, 100, 0.9);
+      transition: text-shadow 0.4s ease;
+      text-shadow: 0 0 10px rgba(0,255,100,0.2);
+    }
+
+    .name.hovered {
+      text-shadow: 0 0 20px rgba(0,255,100,0.5), 0 0 40px rgba(0,255,100,0.2);
+    }
+
+    .divider {
+      width: 64px;
+      height: 1px;
+      margin: 4px 0;
+      background: linear-gradient(90deg, transparent, rgba(0,255,100,0.4), transparent);
+    }
+
+    .description {
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.6;
+      padding: 0 8px;
+      color: rgba(180, 220, 195, 0.7);
+    }
+
+    .social-links {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 4px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .social-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: rgba(0, 255, 100, 0.05);
+      border: 1px solid rgba(0, 255, 100, 0.1);
+      color: rgba(0, 255, 100, 0.6);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+      transform: scale(1.05);
+      background: rgba(0, 255, 100, 0.1);
+      border-color: rgba(0, 255, 100, 0.3);
+      color: rgba(0, 255, 100, 0.9);
+    }
+
+    .social-link:active {
+      transform: scale(0.97);
+    }
+
+    .social-link svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: rgba(0, 255, 100, 0.8);
+      box-shadow: 0 0 8px rgba(0, 255, 100, 0.5);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .status-text {
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(0, 255, 100, 0.5);
+    }
+
+    .music-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      background: rgba(5, 20, 10, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 100, 0.15);
+      color: rgba(0, 255, 100, 0.4);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .music-btn:hover {
+      transform: scale(1.05);
+      border-color: rgba(0, 255, 100, 0.4);
+      box-shadow: 0 0 20px rgba(0, 255, 100, 0.15);
+    }
+
+    .music-btn:active {
+      transform: scale(0.97);
+    }
+
+    .music-btn.playing {
+      color: rgba(0, 255, 100, 0.9);
+    }
+
+    .music-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .music-indicator {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: rgba(0, 255, 100, 0.8);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    .bottom-fade {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 96px;
+      z-index: 5;
+      pointer-events: none;
+      background: linear-gradient(to top, rgba(2,10,5,0.6), transparent);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix-canvas"></canvas>
+  <div class="vignette"></div>
+
+  <div class="center-wrapper">
+    <div class="bio-card-wrapper">
+      <div class="bio-card-outer" id="bio-card-outer">
+        <div class="bio-card-glow" id="bio-card-glow"></div>
+        <div class="bio-card">
+          <div class="bio-card-inner-glow" id="bio-card-inner-glow"></div>
+
+          <div class="avatar-wrapper" id="avatar-wrapper">
+            <div class="avatar" id="avatar">YN</div>
+          </div>
+
+          <div class="info">
+            <h1 class="name" id="bio-name">Your Name</h1>
+            <div class="divider"></div>
+            <p class="description">Developer / Creator / Hacker. Building cool things on the internet. Welcome to my digital space.</p>
+          </div>
+
+          <div class="social-links">
+            <a href="https://github.com/PerfectSUPREME" target="_blank" rel="noopener noreferrer" class="social-link" title="GitHub">
+              <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+            </a>
+            <a href="https://discord.com" target="_blank" rel="noopener noreferrer" class="social-link" title="Discord">
+              <svg viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z"/></svg>
+            </a>
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" class="social-link" title="Twitter / X">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+          </div>
+
+          <div class="status">
+            <span class="status-dot"></span>
+            <span class="status-text">online</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="music-btn" id="music-btn" title="Play music">
+    <span class="music-indicator" id="music-indicator"></span>
+    <svg id="icon-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <line x1="23" y1="9" x2="17" y2="15"></line>
+      <line x1="17" y1="9" x2="23" y2="15"></line>
+    </svg>
+    <svg id="icon-playing" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    </svg>
+  </button>
+
+  <div class="bottom-fade"></div>
+
+  <script>
+    // ========== MATRIX RAIN ==========
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    const CHARS = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ{}[]|;:,.<>?/!@#$%^&*()_+-=';
+
+    let mouse = { x: -1000, y: -1000 };
+    let columns = [];
+    const fontSize = 14;
+
+    function initColumns() {
+      const numCols = Math.ceil(canvas.width / fontSize);
+      columns = [];
+      for (let i = 0; i < numCols; i++) {
+        const length = Math.floor(Math.random() * 25) + 8;
+        const chars = [];
+        for (let j = 0; j < length; j++) {
+          chars.push(CHARS[Math.floor(Math.random() * CHARS.length)]);
+        }
+        columns.push({
+          x: i * fontSize,
+          y: Math.random() * canvas.height * 2 - canvas.height,
+          speed: Math.random() * 2 + 1,
+          chars: chars,
+          length: length,
+          opacity: Math.random() * 0.4 + 0.1
+        });
+      }
+    }
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initColumns();
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', function(e) {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(5, 15, 8, 0.12)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (let c = 0; c < columns.length; c++) {
+        const col = columns[c];
+        const dx = col.x - mouse.x;
+        const dy = col.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const mouseInfluence = Math.max(0, 1 - dist / 250);
+        const dynamicSpeed = col.speed + mouseInfluence * 4;
+        const dynamicOpacity = col.opacity + mouseInfluence * 0.5;
+
+        for (let j = 0; j < col.chars.length; j++) {
+          const charY = col.y - j * fontSize;
+          if (charY < -fontSize || charY > canvas.height + fontSize) continue;
+
+          const charDx = col.x - mouse.x;
+          const charDy = charY - mouse.y;
+          const charDist = Math.sqrt(charDx * charDx + charDy * charDy);
+          const charInfluence = Math.max(0, 1 - charDist / 200);
+          const progress = j / col.chars.length;
+
+          if (j === 0) {
+            const brightness = 0.9 + charInfluence * 0.1;
+            ctx.fillStyle = 'rgba(0, 255, 100, ' + brightness + ')';
+            ctx.shadowColor = 'rgba(0, 255, 100, 0.8)';
+            ctx.shadowBlur = 8 + charInfluence * 15;
+          } else {
+            const fade = (1 - progress) * dynamicOpacity;
+            const g = Math.floor(180 + charInfluence * 75);
+            const r = Math.floor(charInfluence * 40);
+            ctx.fillStyle = 'rgba(' + r + ', ' + g + ', 60, ' + fade + ')';
+            ctx.shadowColor = 'rgba(0, ' + g + ', 60, ' + (fade * 0.3) + ')';
+            ctx.shadowBlur = charInfluence * 10;
+          }
+
+          ctx.font = fontSize + "px 'JetBrains Mono', monospace";
+          const offsetX = dist > 0 ? charInfluence * (dx / dist) * 8 : 0;
+          ctx.fillText(col.chars[j], col.x + offsetX, charY);
+
+          if (Math.random() < 0.005 + charInfluence * 0.05) {
+            col.chars[j] = CHARS[Math.floor(Math.random() * CHARS.length)];
+          }
+        }
+
+        ctx.shadowBlur = 0;
+        col.y += dynamicSpeed;
+
+        if (col.y - col.chars.length * fontSize > canvas.height) {
+          col.y = -col.chars.length * fontSize;
+          col.speed = Math.random() * 2 + 1;
+          col.opacity = Math.random() * 0.4 + 0.1;
+        }
+      }
+
+      if (mouse.x > 0 && mouse.y > 0) {
+        const gradient = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 180);
+        gradient.addColorStop(0, 'rgba(0, 255, 100, 0.03)');
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(mouse.x - 180, mouse.y - 180, 360, 360);
+      }
+
+      requestAnimationFrame(drawMatrix);
+    }
+
+    drawMatrix();
+
+    // ========== BIO CARD HOVER ==========
+    const cardOuter = document.getElementById('bio-card-outer');
+    const cardGlow = document.getElementById('bio-card-glow');
+    const cardInnerGlow = document.getElementById('bio-card-inner-glow');
+    const avatarWrapper = document.getElementById('avatar-wrapper');
+    const bioName = document.getElementById('bio-name');
+
+    let cardX = 0, cardY = 0, cardRX = 0, cardRY = 0;
+    let targetX = 0, targetY = 0, targetRX = 0, targetRY = 0;
+    let isCardHovered = false;
+
+    window.addEventListener('mousemove', function(e) {
+      const rect = cardOuter.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const maxDist = 400;
+      const influence = Math.max(0, 1 - dist / maxDist);
+
+      targetX = (dx / maxDist) * 12 * influence;
+      targetY = (dy / maxDist) * 12 * influence;
+      targetRY = (dx / rect.width) * 8 * influence;
+      targetRX = (-dy / rect.height) * 8 * influence;
+
+      const glowX = ((e.clientX - rect.left) / rect.width) * 100;
+      const glowY = ((e.clientY - rect.top) / rect.height) * 100;
+
+      isCardHovered = dist < maxDist;
+
+      if (isCardHovered) {
+        cardGlow.style.opacity = '0.7';
+        cardGlow.style.background = 'conic-gradient(from 180deg at ' + glowX + '% ' + glowY + '%, rgba(0,255,100,0.4) 0deg, rgba(0,200,80,0.1) 90deg, rgba(0,255,100,0.4) 180deg, rgba(0,200,80,0.1) 270deg, rgba(0,255,100,0.4) 360deg)';
+        cardInnerGlow.style.opacity = '1';
+        cardInnerGlow.style.background = 'radial-gradient(circle at ' + glowX + '% ' + glowY + '%, rgba(0,255,100,0.06) 0%, transparent 60%)';
+        avatarWrapper.classList.add('hovered');
+        bioName.classList.add('hovered');
+      } else {
+        cardGlow.style.opacity = '0';
+        cardInnerGlow.style.opacity = '0';
+        avatarWrapper.classList.remove('hovered');
+        bioName.classList.remove('hovered');
+      }
+    });
+
+    function animateCard() {
+      const ease = 0.08;
+      cardX += (targetX - cardX) * ease;
+      cardY += (targetY - cardY) * ease;
+      cardRX += (targetRX - cardRX) * ease;
+      cardRY += (targetRY - cardRY) * ease;
+
+      cardOuter.style.transform = 'translate(' + cardX + 'px, ' + cardY + 'px) rotateX(' + cardRX + 'deg) rotateY(' + cardRY + 'deg)';
+      requestAnimationFrame(animateCard);
+    }
+
+    animateCard();
+
+    // ========== MUSIC PLAYER ==========
+    const musicBtn = document.getElementById('music-btn');
+    const iconMuted = document.getElementById('icon-muted');
+    const iconPlaying = document.getElementById('icon-playing');
+    const musicIndicator = document.getElementById('music-indicator');
+    let isPlaying = false;
+    let audio = null;
+
+    musicBtn.addEventListener('click', function() {
+      if (!audio) {
+        audio = new Audio('music/background.mp3');
+        audio.loop = true;
+        audio.volume = 0.3;
+      }
+
+      musicIndicator.style.display = 'none';
+
+      if (isPlaying) {
+        audio.pause();
+        isPlaying = false;
+        iconMuted.style.display = 'block';
+        iconPlaying.style.display = 'none';
+        musicBtn.classList.remove('playing');
+      } else {
+        audio.play().catch(function() {});
+        isPlaying = true;
+        iconMuted.style.display = 'none';
+        iconPlaying.style.display = 'block';
+        musicBtn.classList.add('playing');
+      }
+    });
+  </script>
+</body>
+</html>
