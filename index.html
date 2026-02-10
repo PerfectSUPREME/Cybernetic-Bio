@@ -306,9 +306,94 @@
       pointer-events: none;
       background: linear-gradient(to top, rgba(2,10,5,0.6), transparent);
     }
+
+    .splash-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #020a05;
+      cursor: pointer;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    .splash-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .splash-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .splash-content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      opacity: 0;
+      animation: fadeIn 1s ease-out 0.5s forwards;
+    }
+
+    .splash-title {
+      font-size: 14px;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(0, 255, 100, 0.4);
+    }
+
+    .splash-enter {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      color: rgba(0, 255, 100, 0.85);
+      text-shadow: 0 0 20px rgba(0,255,100,0.3), 0 0 40px rgba(0,255,100,0.1);
+      animation: glowPulse 2s ease-in-out infinite;
+      padding: 16px 40px;
+      border: 1px solid rgba(0, 255, 100, 0.15);
+      border-radius: 6px;
+      background: rgba(0, 255, 100, 0.03);
+      transition: all 0.3s ease;
+    }
+
+    .splash-enter:hover {
+      border-color: rgba(0, 255, 100, 0.4);
+      background: rgba(0, 255, 100, 0.08);
+      text-shadow: 0 0 30px rgba(0,255,100,0.5), 0 0 60px rgba(0,255,100,0.2);
+    }
+
+    .splash-hint {
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: rgba(0, 255, 100, 0.2);
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { text-shadow: 0 0 20px rgba(0,255,100,0.3), 0 0 40px rgba(0,255,100,0.1); }
+      50% { text-shadow: 0 0 30px rgba(0,255,100,0.5), 0 0 60px rgba(0,255,100,0.2); }
+    }
   </style>
 </head>
 <body>
+  <div class="splash-screen" id="splash-screen">
+    <canvas class="splash-canvas" id="splash-canvas"></canvas>
+    <div class="splash-content">
+      <div class="splash-title">welcome</div>
+      <div class="splash-enter">CLICK TO ENTER</div>
+      <div class="splash-hint">tap anywhere</div>
+    </div>
+  </div>
+
   <canvas id="matrix-canvas"></canvas>
   <div class="vignette"></div>
 
@@ -366,6 +451,72 @@
   <div class="bottom-fade"></div>
 
   <script>
+    // ========== SPLASH SCREEN ==========
+    const splashScreen = document.getElementById('splash-screen');
+    const splashCanvas = document.getElementById('splash-canvas');
+    const splashCtx = splashCanvas.getContext('2d');
+    const SPLASH_CHARS = 'アイウエオカキクケコ01{}[]<>';
+    let splashCols = [];
+    let splashActive = true;
+
+    function initSplash() {
+      splashCanvas.width = window.innerWidth;
+      splashCanvas.height = window.innerHeight;
+      const numCols = Math.ceil(splashCanvas.width / 16);
+      splashCols = [];
+      for (let i = 0; i < numCols; i++) {
+        splashCols.push({
+          x: i * 16,
+          y: Math.random() * splashCanvas.height,
+          speed: Math.random() * 1.5 + 0.5,
+          opacity: Math.random() * 0.15 + 0.03
+        });
+      }
+    }
+
+    function drawSplash() {
+      if (!splashActive) return;
+      splashCtx.fillStyle = 'rgba(2, 10, 5, 0.15)';
+      splashCtx.fillRect(0, 0, splashCanvas.width, splashCanvas.height);
+      splashCtx.font = "14px 'JetBrains Mono', monospace";
+      for (let i = 0; i < splashCols.length; i++) {
+        const col = splashCols[i];
+        const ch = SPLASH_CHARS[Math.floor(Math.random() * SPLASH_CHARS.length)];
+        splashCtx.fillStyle = 'rgba(0, 255, 100, ' + col.opacity + ')';
+        splashCtx.fillText(ch, col.x, col.y);
+        col.y += col.speed;
+        if (col.y > splashCanvas.height) {
+          col.y = 0;
+        }
+      }
+      requestAnimationFrame(drawSplash);
+    }
+
+    initSplash();
+    drawSplash();
+    window.addEventListener('resize', initSplash);
+
+    splashScreen.addEventListener('click', function() {
+      splashActive = false;
+      splashScreen.classList.add('hidden');
+
+      var audio = new Audio('music/background.mp3');
+      audio.loop = true;
+      audio.volume = 0.3;
+      audio.play().catch(function() {});
+      window._bioAudio = audio;
+
+      var iconMuted = document.getElementById('icon-muted');
+      var iconPlaying = document.getElementById('icon-playing');
+      var musicBtn = document.getElementById('music-btn');
+      var musicIndicator = document.getElementById('music-indicator');
+      iconMuted.style.display = 'none';
+      iconPlaying.style.display = 'block';
+      musicBtn.classList.add('playing');
+      musicIndicator.style.display = 'none';
+      window._bioIsPlaying = true;
+    });
+
     // ========== MATRIX RAIN ==========
     const canvas = document.getElementById('matrix-canvas');
     const ctx = canvas.getContext('2d');
@@ -541,27 +692,27 @@
     const iconMuted = document.getElementById('icon-muted');
     const iconPlaying = document.getElementById('icon-playing');
     const musicIndicator = document.getElementById('music-indicator');
-    let isPlaying = false;
-    let audio = null;
 
     musicBtn.addEventListener('click', function() {
+      var audio = window._bioAudio;
       if (!audio) {
         audio = new Audio('music/background.mp3');
         audio.loop = true;
         audio.volume = 0.3;
+        window._bioAudio = audio;
       }
 
       musicIndicator.style.display = 'none';
 
-      if (isPlaying) {
+      if (window._bioIsPlaying) {
         audio.pause();
-        isPlaying = false;
+        window._bioIsPlaying = false;
         iconMuted.style.display = 'block';
         iconPlaying.style.display = 'none';
         musicBtn.classList.remove('playing');
       } else {
         audio.play().catch(function() {});
-        isPlaying = true;
+        window._bioIsPlaying = true;
         iconMuted.style.display = 'none';
         iconPlaying.style.display = 'block';
         musicBtn.classList.add('playing');
