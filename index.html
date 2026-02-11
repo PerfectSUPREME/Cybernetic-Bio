@@ -105,9 +105,67 @@
       color: rgba(220, 240, 255, 0.95);
       transition: text-shadow 0.4s ease;
       text-shadow: 0 0 10px rgba(0,200,255,0.15);
+      position: relative;
+      animation: glitch-skew 0.8s infinite linear alternate-reverse;
+    }
+    .name::before, .name::after {
+      content: attr(data-text);
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; overflow: hidden;
+    }
+    .name::before {
+      color: rgba(255, 255, 255, 0.7);
+      animation: glitch-1 0.4s infinite linear alternate-reverse;
+      clip-path: inset(10% 0 60% 0);
+      text-shadow: 2px 0 rgba(255, 255, 255, 0.3);
+    }
+    .name::after {
+      color: rgba(255, 255, 255, 0.7);
+      animation: glitch-2 0.35s infinite linear alternate-reverse;
+      clip-path: inset(55% 0 10% 0);
+      text-shadow: -2px 0 rgba(255, 255, 255, 0.3);
     }
     .name.hovered {
       text-shadow: 0 0 20px rgba(0,200,255,0.4), 0 0 40px rgba(180,100,255,0.15);
+    }
+    @keyframes glitch-skew {
+      0% { transform: translate(0, 0) skew(0deg); }
+      10% { transform: translate(-1px, 1px) skew(0.5deg); }
+      20% { transform: translate(1px, -1px) skew(-0.5deg); }
+      30% { transform: translate(-1px, 0px) skew(0.3deg); }
+      40% { transform: translate(1px, 1px) skew(-0.3deg); }
+      50% { transform: translate(0px, -1px) skew(0.5deg); }
+      60% { transform: translate(-1px, 1px) skew(-0.5deg); }
+      70% { transform: translate(1px, 0px) skew(0.3deg); }
+      80% { transform: translate(0px, 1px) skew(-0.3deg); }
+      90% { transform: translate(-1px, -1px) skew(0.5deg); }
+      100% { transform: translate(1px, 0px) skew(0deg); }
+    }
+    @keyframes glitch-1 {
+      0% { transform: translate(0); clip-path: inset(10% 0 60% 0); }
+      10% { transform: translate(3px, -1px); clip-path: inset(5% 0 65% 0); }
+      20% { transform: translate(-2px, 1px); clip-path: inset(15% 0 55% 0); }
+      30% { transform: translate(4px, 0px); clip-path: inset(8% 0 62% 0); }
+      40% { transform: translate(-3px, -1px); clip-path: inset(12% 0 58% 0); }
+      50% { transform: translate(2px, 1px); clip-path: inset(3% 0 67% 0); }
+      60% { transform: translate(-4px, 0px); clip-path: inset(18% 0 52% 0); }
+      70% { transform: translate(3px, -1px); clip-path: inset(7% 0 63% 0); }
+      80% { transform: translate(-2px, 1px); clip-path: inset(14% 0 56% 0); }
+      90% { transform: translate(4px, 0px); clip-path: inset(6% 0 64% 0); }
+      100% { transform: translate(-3px, -1px); clip-path: inset(11% 0 59% 0); }
+    }
+    @keyframes glitch-2 {
+      0% { transform: translate(0); clip-path: inset(55% 0 10% 0); }
+      10% { transform: translate(-3px, 1px); clip-path: inset(60% 0 5% 0); }
+      20% { transform: translate(2px, -1px); clip-path: inset(50% 0 15% 0); }
+      30% { transform: translate(-4px, 0px); clip-path: inset(58% 0 7% 0); }
+      40% { transform: translate(3px, 1px); clip-path: inset(53% 0 12% 0); }
+      50% { transform: translate(-2px, -1px); clip-path: inset(62% 0 3% 0); }
+      60% { transform: translate(4px, 0px); clip-path: inset(48% 0 17% 0); }
+      70% { transform: translate(-3px, 1px); clip-path: inset(57% 0 8% 0); }
+      80% { transform: translate(2px, -1px); clip-path: inset(52% 0 13% 0); }
+      90% { transform: translate(-4px, 0px); clip-path: inset(61% 0 4% 0); }
+      100% { transform: translate(3px, 1px); clip-path: inset(54% 0 11% 0); }
     }
 
     .tags {
@@ -369,7 +427,7 @@
 
           <div class="info">
             <div class="name-row">
-              <h1 class="name" id="bio-name">PerfectSupreme</h1>
+              <h1 class="name" id="bio-name" data-text="PerfectSupreme">PerfectSupreme</h1>
               <div class="name-badge" style="color:rgba(0,200,255,0.7);">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 <span class="badge-tooltip" style="background:rgba(0,200,255,0.15);border:1px solid rgba(0,200,255,0.3);color:rgba(0,200,255,0.95);">Verified</span>
@@ -480,18 +538,31 @@
     var currentTrack = 0;
     var volume = 0.3;
 
-    // ===== TYPING EFFECT =====
+    // ===== TYPING EFFECT (LOOPING) =====
     var fullDesc = "Developer / Creator. Building cool things on the internet. Welcome to my digital space.";
     var descEl = document.getElementById('bio-desc');
     var charIdx = 0;
-    var typeInterval = setInterval(function() {
-      if (charIdx <= fullDesc.length) {
-        descEl.innerHTML = fullDesc.slice(0, charIdx) + '<span class="typing-cursor">|</span>';
+    var typeDeleting = false;
+    function typeTick() {
+      if (!typeDeleting) {
         charIdx++;
+        descEl.innerHTML = fullDesc.slice(0, charIdx) + '<span class="typing-cursor">|</span>';
+        if (charIdx >= fullDesc.length) {
+          setTimeout(function() { typeDeleting = true; typeTick(); }, 2000);
+        } else {
+          setTimeout(typeTick, 35);
+        }
       } else {
-        clearInterval(typeInterval);
+        charIdx--;
+        descEl.innerHTML = fullDesc.slice(0, charIdx) + '<span class="typing-cursor">|</span>';
+        if (charIdx <= 0) {
+          setTimeout(function() { typeDeleting = false; typeTick(); }, 500);
+        } else {
+          setTimeout(typeTick, 20);
+        }
       }
-    }, 30);
+    }
+    setTimeout(typeTick, 300);
 
     // ===== SPLASH SCREEN =====
     var splashScreen = document.getElementById('splash-screen');
