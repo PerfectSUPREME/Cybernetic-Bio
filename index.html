@@ -44,35 +44,6 @@
       object-fit: cover;
     }
 
-    .video-controls {
-      position: fixed; top: 16px; right: 16px; z-index: 50;
-      display: flex; align-items: center; gap: 8px;
-    }
-    .vc-btn {
-      display: flex; align-items: center; justify-content: center;
-      width: 36px; height: 36px; border-radius: 6px; cursor: pointer;
-      background: rgba(10, 10, 10, 0.7); backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: rgba(255, 255, 255, 0.6); transition: all 0.2s ease;
-    }
-    .vc-btn:hover {
-      border-color: rgba(255, 255, 255, 0.4); color: rgba(255, 255, 255, 1);
-    }
-    .vc-btn:active { transform: scale(0.95); }
-    .vc-btn svg { width: 16px; height: 16px; }
-    .vc-btn-remove {
-      border-color: rgba(255, 80, 80, 0.2); color: rgba(255, 80, 80, 0.7);
-    }
-    .vc-btn-remove:hover {
-      border-color: rgba(255, 80, 80, 0.5); color: rgba(255, 80, 80, 1);
-    }
-    .vc-btn-restore {
-      border-color: rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.6);
-    }
-    .vc-btn-restore:hover {
-      border-color: rgba(255, 255, 255, 0.4); color: rgba(255, 255, 255, 1);
-    }
-
     .center-wrapper {
       position: relative; z-index: 10;
       display: flex; align-items: center; justify-content: center;
@@ -467,13 +438,6 @@
   <video id="video-bg" src="background.mp4" autoplay loop muted playsinline style="display:none"></video>
   <canvas id="matrix-canvas"></canvas>
   <div class="vignette" id="vignette"></div>
-
-  <div class="video-controls">
-    <button class="vc-btn vc-btn-restore" id="video-toggle" title="Restore video background">
-      <svg id="vc-icon-remove" style="display:none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-      <svg id="vc-icon-restore" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-    </button>
-  </div>
 
   <div class="center-wrapper">
     <div class="bio-card-wrapper">
@@ -966,39 +930,22 @@
       a.currentTime = pct * a.duration;
     });
 
-    // ===== VIDEO BACKGROUND TOGGLE =====
+    // ===== VIDEO BACKGROUND AUTO-DETECT =====
     var videoBg = document.getElementById('video-bg');
-    var videoToggle = document.getElementById('video-toggle');
-    var iconRemove = document.getElementById('vc-icon-remove');
-    var iconRestore = document.getElementById('vc-icon-restore');
     var matrixCanvas = document.getElementById('matrix-canvas');
     var vignetteEl = document.getElementById('vignette');
-    var videoActive = false;
 
-    videoToggle.addEventListener('click', function() {
-      if (videoActive) {
-        videoBg.pause();
-        videoBg.style.display = 'none';
-        matrixCanvas.style.display = 'block';
-        vignetteEl.classList.remove('video-active');
-        iconRemove.style.display = 'none';
-        iconRestore.style.display = 'block';
-        videoToggle.classList.remove('vc-btn-remove');
-        videoToggle.classList.add('vc-btn-restore');
-        videoToggle.title = 'Restore video background';
-        videoActive = false;
-      } else {
-        videoBg.style.display = 'block';
-        videoBg.play();
-        matrixCanvas.style.display = 'none';
-        vignetteEl.classList.add('video-active');
-        iconRemove.style.display = 'block';
-        iconRestore.style.display = 'none';
-        videoToggle.classList.add('vc-btn-remove');
-        videoToggle.classList.remove('vc-btn-restore');
-        videoToggle.title = 'Remove video background';
-        videoActive = true;
-      }
+    videoBg.addEventListener('canplay', function() {
+      videoBg.style.display = 'block';
+      matrixCanvas.style.display = 'none';
+      vignetteEl.classList.add('video-active');
+      videoBg.play();
+    });
+
+    videoBg.addEventListener('error', function() {
+      videoBg.style.display = 'none';
+      matrixCanvas.style.display = 'block';
+      vignetteEl.classList.remove('video-active');
     });
   </script>
 </body>
