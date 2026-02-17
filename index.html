@@ -296,39 +296,39 @@
     }
     .vol-btn {
       width: 32px; height: 32px; border-radius: 6px;
-      background: rgba(8, 14, 20, 0.85); backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 200, 255, 0.15);
-      color: rgba(0, 200, 255, 0.7); cursor: pointer;
+      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.7); cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: all 0.2s ease; font-size: 14px;
     }
     .vol-btn:hover {
-      border-color: rgba(0, 200, 255, 0.4); color: rgba(0, 200, 255, 1);
+      border-color: rgba(255, 255, 255, 0.4); color: rgba(255, 255, 255, 1);
     }
     .vol-btn:active { transform: scale(0.95); }
     .vol-pct {
       font-size: 10px; letter-spacing: 0.1em;
-      color: rgba(0, 200, 255, 0.5); font-variant-numeric: tabular-nums;
+      color: rgba(255, 255, 255, 0.5); font-variant-numeric: tabular-nums;
     }
     .music-btn {
       display: flex; align-items: center; justify-content: center;
       width: 40px; height: 40px; border-radius: 6px;
-      background: rgba(8, 14, 20, 0.85); backdrop-filter: blur(10px);
-      border: 1px solid rgba(0, 200, 255, 0.15);
-      color: rgba(0, 200, 255, 0.4); cursor: pointer; transition: all 0.3s ease;
+      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: rgba(255, 255, 255, 0.4); cursor: pointer; transition: all 0.3s ease;
       position: relative;
     }
     .music-btn:hover {
-      transform: scale(1.05); border-color: rgba(0, 200, 255, 0.4);
-      box-shadow: 0 0 20px rgba(0, 200, 255, 0.12);
+      transform: scale(1.05); border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
     }
     .music-btn:active { transform: scale(0.97); }
-    .music-btn.playing { color: rgba(0, 200, 255, 0.9); }
+    .music-btn.playing { color: rgba(255, 255, 255, 0.9); }
     .music-btn svg { width: 16px; height: 16px; }
     .music-indicator {
       position: absolute; top: -4px; right: -4px;
       width: 8px; height: 8px; border-radius: 50%;
-      background-color: rgba(0, 200, 255, 0.8);
+      background-color: rgba(255, 255, 255, 0.8);
       animation: pulse 1.5s ease-in-out infinite;
     }
 
@@ -337,20 +337,20 @@
       position: fixed; bottom: 24px; left: 24px;
       z-index: 40; display: flex; align-items: center; gap: 12px;
       padding: 8px 16px; border-radius: 6px; min-width: 300px; max-width: 90vw;
-      background: rgba(8, 14, 20, 0.85); backdrop-filter: blur(20px);
-      border: 1px solid rgba(0, 200, 255, 0.1);
+      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       opacity: 0; animation: fadeIn 0.5s ease-out 1s forwards;
     }
     .player-icon {
       width: 28px; height: 28px; border-radius: 4px;
-      background: rgba(0, 200, 255, 0.08);
+      background: rgba(255, 255, 255, 0.08);
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
-    .player-icon svg { width: 14px; height: 14px; color: rgba(0, 200, 255, 0.6); stroke: currentColor; fill: none; }
+    .player-icon svg { width: 14px; height: 14px; color: rgba(255, 255, 255, 0.6); stroke: currentColor; fill: none; }
     .player-info { flex: 1; min-width: 0; }
     .player-track-name {
       font-size: 11px; letter-spacing: 0.05em;
-      color: rgba(220, 240, 255, 0.8);
+      color: rgba(255, 255, 255, 0.8);
       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
     .player-progress-wrap {
@@ -359,30 +359,30 @@
     }
     .player-progress {
       position: absolute; top: 0; left: 0; height: 100%; border-radius: 4px;
-      background: linear-gradient(90deg, rgba(0,200,255,0.6), rgba(180,100,255,0.6));
+      background: linear-gradient(90deg, rgba(255,255,255,0.5), rgba(200,200,200,0.5));
       transition: width 0.25s linear;
     }
     .player-times {
       display: flex; justify-content: space-between; margin-top: 2px;
-      font-size: 9px; color: rgba(180,200,220,0.4); font-variant-numeric: tabular-nums;
+      font-size: 9px; color: rgba(255,255,255,0.4); font-variant-numeric: tabular-nums;
     }
     .player-controls { display: flex; align-items: center; gap: 4px; }
     .p-ctrl {
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; background: none; border: none;
-      color: rgba(0, 200, 255, 0.5); transition: color 0.2s;
+      color: rgba(255, 255, 255, 0.5); transition: color 0.2s;
     }
-    .p-ctrl:hover { color: rgba(0, 200, 255, 0.9); }
+    .p-ctrl:hover { color: rgba(255, 255, 255, 0.9); }
     .p-ctrl:active { transform: scale(0.95); }
     .p-ctrl svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .p-ctrl-play {
       width: 32px; height: 32px; border-radius: 6px;
-      background: rgba(0, 200, 255, 0.1); border: 1px solid rgba(0, 200, 255, 0.2);
-      color: rgba(0, 200, 255, 0.9); cursor: pointer; transition: all 0.2s;
+      background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.9); cursor: pointer; transition: all 0.2s;
       display: flex; align-items: center; justify-content: center;
     }
     .p-ctrl-play:hover {
-      background: rgba(0, 200, 255, 0.18); border-color: rgba(0, 200, 255, 0.4);
+      background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.4);
     }
     .p-ctrl-play:active { transform: scale(0.95); }
     .p-ctrl-play svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
@@ -403,25 +403,25 @@
     }
     .splash-title {
       font-size: 14px; font-weight: 300; letter-spacing: 0.3em;
-      text-transform: uppercase; color: rgba(0, 200, 255, 0.4);
+      text-transform: uppercase; color: rgba(255, 255, 255, 0.4);
     }
     .splash-enter {
       font-size: 18px; font-weight: 600; letter-spacing: 0.15em;
-      color: rgba(0, 200, 255, 0.85);
-      text-shadow: 0 0 20px rgba(0,200,255,0.3), 0 0 40px rgba(180,100,255,0.1);
+      color: rgba(255, 255, 255, 0.85);
+      text-shadow: 0 0 20px rgba(255,255,255,0.2), 0 0 40px rgba(200,200,200,0.1);
       animation: glowPulse 2s ease-in-out infinite;
-      padding: 16px 40px; border: 1px solid rgba(0, 200, 255, 0.15);
-      border-radius: 6px; background: rgba(0, 200, 255, 0.03);
+      padding: 16px 40px; border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px; background: rgba(255, 255, 255, 0.03);
       transition: all 0.3s ease;
     }
     .splash-enter:hover {
-      border-color: rgba(0, 200, 255, 0.4); background: rgba(0, 200, 255, 0.08);
-      text-shadow: 0 0 30px rgba(0,200,255,0.5), 0 0 60px rgba(180,100,255,0.2);
+      border-color: rgba(255, 255, 255, 0.4); background: rgba(255, 255, 255, 0.08);
+      text-shadow: 0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(200,200,200,0.2);
     }
-    .splash-hint { font-size: 11px; letter-spacing: 0.2em; color: rgba(0, 200, 255, 0.2); }
+    .splash-hint { font-size: 11px; letter-spacing: 0.2em; color: rgba(255, 255, 255, 0.2); }
     @keyframes glowPulse {
-      0%, 100% { text-shadow: 0 0 20px rgba(0,200,255,0.3), 0 0 40px rgba(180,100,255,0.1); }
-      50% { text-shadow: 0 0 30px rgba(0,200,255,0.5), 0 0 60px rgba(180,100,255,0.2); }
+      0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.2), 0 0 40px rgba(200,200,200,0.1); }
+      50% { text-shadow: 0 0 30px rgba(255,255,255,0.4), 0 0 60px rgba(200,200,200,0.2); }
     }
   </style>
 </head>
@@ -460,13 +460,13 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                 <span class="badge-tooltip" style="background:rgba(0,200,255,0.15);border:1px solid rgba(0,200,255,0.3);color:rgba(0,200,255,0.95);">Verified</span>
               </div>
-              <div class="name-badge" style="color:rgba(255,200,0,0.7);">
+              <div class="name-badge" style="color:rgba(255,60,60,0.7);">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                <span class="badge-tooltip" style="background:rgba(255,200,0,0.15);border:1px solid rgba(255,200,0,0.3);color:rgba(255,200,0,0.95);">OG</span>
+                <span class="badge-tooltip" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.3);color:rgba(255,60,60,0.95);">OG</span>
               </div>
-              <div class="name-badge" style="color:rgba(180,100,255,0.7);">
+              <div class="name-badge" style="color:rgba(255,60,60,0.7);">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                <span class="badge-tooltip" style="background:rgba(180,100,255,0.15);border:1px solid rgba(180,100,255,0.3);color:rgba(180,100,255,0.95);">Staff</span>
+                <span class="badge-tooltip" style="background:rgba(255,60,60,0.15);border:1px solid rgba(255,60,60,0.3);color:rgba(255,60,60,0.95);">Staff</span>
               </div>
             </div>
 
