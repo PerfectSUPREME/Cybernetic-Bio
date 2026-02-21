@@ -435,7 +435,7 @@
     </div>
   </div>
 
-  <video id="video-bg" src="background.mp4" autoplay loop muted playsinline style="display:none"></video>
+  <video id="video-bg" src="background.mp4" loop muted playsinline preload="auto" style="display:none"></video>
   <canvas id="matrix-canvas"></canvas>
   <div class="vignette" id="vignette"></div>
 
@@ -662,6 +662,11 @@
     splashScreen.addEventListener('click', function() {
       splashActive = false;
       splashScreen.classList.add('hidden');
+      var vb = document.getElementById('video-bg');
+      if (vb && vb.style.display !== 'none') {
+        vb.currentTime = 0;
+        vb.play().catch(function(){});
+      }
       startAudio();
     });
 
@@ -939,7 +944,8 @@
       videoBg.style.display = 'block';
       matrixCanvas.style.display = 'none';
       vignetteEl.classList.add('video-active');
-      videoBg.play();
+      videoBg.pause();
+      videoBg.currentTime = 0;
     });
 
     videoBg.addEventListener('error', function() {
